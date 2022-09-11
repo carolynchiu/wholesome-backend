@@ -9,7 +9,13 @@ const port = process.env.SERVER_PORT || 3002;
 
 // 允許跨源存取
 const cors = require("cors");
-app.use(cors());
+const corsOptions = {
+  // 如果要讓 cookie 可以跨網域存取，這邊要設定 credentials
+  // 且 origin 也要設定
+  credentials: true,
+  origin: ["http://localhost:3000"],
+};
+app.use(cors(corsOptions));
 
 // 啟用 session
 const expressSession = require("express-session");
@@ -53,6 +59,10 @@ app.get("/", (req, res) => {
 //註冊、登入、登出
 let authRouter = require("./routers/auth");
 app.use("/api/1.0/auth", authRouter);
+
+//會員資料
+let userRouter = require("./routers/user");
+app.use("/api/1.0/user", userRouter);
 
 // 商品列表
 let productsRouter = require("./routers/products");

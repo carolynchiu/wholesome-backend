@@ -97,13 +97,21 @@ router.post("/login", async (req, res) => {
     email: user.email,
     birthday: user.birthday,
     phone: user.phone,
+    gender: user.gender,
+    address: user.address,
+    loginDt: new Date().toISOString(),
   };
 
   // 把資料寫進 session 裡
   req.session.user = saveUser;
 
   // --- (6) 回覆前端登入成功
-  res.json({ saveUser, message: "登入成功" });
+  res.json(saveUser);
+});
+
+router.get("/logout", (req, res, next) => {
+  req.session.user = null;
+  res.json({ message: "登出成功" });
 });
 
 module.exports = router;
