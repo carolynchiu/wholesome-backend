@@ -64,6 +64,10 @@ app.use("/api/1.0/auth", authRouter);
 let userRouter = require("./routers/user");
 app.use("/api/1.0/user", userRouter);
 
+//訂單資料
+let ordersRouter = require("./routers/orders");
+app.use("/api/1.0/orders", ordersRouter);
+
 // 商品列表
 let productsRouter = require("./routers/products");
 app.use("/api/1.0/products", productsRouter);
