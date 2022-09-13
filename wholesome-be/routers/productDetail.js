@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../utils/database");
 
-//列出某類別的商品資料
+//列出商品詳細資料
 router.get("/:productId", async (req, res) => {
   const productId = req.params.productId;
   console.log("這裡是商品詳細表頁");
