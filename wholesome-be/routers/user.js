@@ -37,6 +37,7 @@ router.put("/:userId", editRules, async (req, res) => {
     return res.status(400).json({ errors: validationError.array() });
   }
   // --- (3) 把資料更新到資料庫 (複習 SQL 語法)
+  // 不用更改 email, birthday
   let result = await pool.execute(
     "UPDATE users SET name=?, phone=?, address=?, gender=? WHERE id=?",
     [req.body.name, req.body.phone, req.body.address, req.body.gender, userId]
