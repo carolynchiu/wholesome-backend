@@ -38,16 +38,8 @@ router.put("/:userId", editRules, async (req, res) => {
   }
   // --- (3) 把資料更新到資料庫 (複習 SQL 語法)
   let result = await pool.execute(
-    "UPDATE users SET name=?, phone=?, email=?, birthday=?, address=?, gender=? WHERE id=?",
-    [
-      req.body.name,
-      req.body.phone,
-      req.body.email,
-      req.body.birthday,
-      req.body.address,
-      req.body.gender,
-      userId,
-    ]
+    "UPDATE users SET name=?, phone=?, address=?, gender=? WHERE id=?",
+    [req.body.name, req.body.phone, req.body.address, req.body.gender, userId]
   );
   console.log("update user", result);
 
