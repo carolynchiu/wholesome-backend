@@ -61,4 +61,19 @@ router.put("/:userId", editRules, async (req, res) => {
   res.json(req.session.user);
 });
 
+// 取得會員所有訂單資料
+router.get("/:userId/orders", async (req, res) => {
+  let userId = req.params.userId;
+  console.log(userId);
+
+  // --- (2) 列出使用者訂單資料
+  let [data] = await pool.execute(
+    "SELECT order_list.*, order_status.name AS order_status FROM order_list LEFT OUTER JOIN order_status ON order_list.status_id = order_status.id WHERE order_list.user_id=?",
+    [userId]
+  );
+  console.log(data);
+
+  res.json(data);
+});
+
 module.exports = router;
