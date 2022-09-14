@@ -61,6 +61,26 @@ router.put("/:userId", editRules, async (req, res) => {
   res.json(req.session.user);
 });
 
+// 更新會員密碼
+router.put("/:userId/modifyPassword", async (req, res) => {
+  // --- (1) 確認資料有沒有收到
+  console.log("req.body", req.body);
+  let userId = req.params.userId;
+  console.log(`修改會員${userId}的密碼`);
+
+  // --- (2) TODO:取得資料庫的密碼
+  let [password] = await pool.execute(
+    "SELECT password FROM users WHERE id = ?",
+    [userId]
+  );
+  let currentPassword = password[0].password;
+  console.log(currentPassword);
+
+  // --- (3) TODO:比較資料庫跟req.body的密碼
+  // --- (4) TODO:資料的驗證
+  res.json({});
+});
+
 // 取得會員所有訂單資料
 router.get("/:userId/orders", async (req, res) => {
   let userId = req.params.userId;
