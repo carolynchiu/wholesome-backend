@@ -1,9 +1,9 @@
-const { compareSync } = require("bcrypt");
 const express = require("express");
 const router = express.Router();
 const pool = require("../utils/database");
 const { body, validationResult } = require("express-validator"); //後端驗證
 const session = require("express-session");
+const bcrypt = require("bcrypt"); //密碼雜湊
 
 const editRules = [
   // 中間件 (1): 檢查 email 是否為正確格式
@@ -77,8 +77,29 @@ router.put("/:userId/modifyPassword", async (req, res) => {
   console.log(currentPassword);
 
   // --- (3) TODO:比較資料庫跟req.body的密碼
-  // --- (4) TODO:資料的驗證
-  res.json({});
+  let compareResult = await bcrypt.compare(req.body.password, currentPassword);
+  console.log(compareResult);
+  // 如果不對，回覆前端
+  if (!compareResult) {
+    return res.status(401).json({ message: "目前密碼輸入錯誤" });
+  }
+  // --- (4) TODO: 比較 newPasswword, confirmNewPassword
+  if (req.body.newPassword.length < 8) {
+    return res.status(401).json({ message: "新密碼長度不可小於8" });
+  }
+  if (req.body.newPassword !== req.body.confirmNewPassword) {
+    return res.status(401).json({ message: "新密碼輸入不一致" });
+  }
+  // --- (5) 密碼要雜湊 hash
+  let hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
+  console.log("雜湊過的新密碼", hashedPassword);
+  // --- (6) 把資料存到資料庫
+  let result = await pool.execute("UPDATE users SET password=? WHERE id=?", [
+    hashedPassword,
+    userId,
+  ]);
+  console.log("insert new user", result);
+  res.json({ message: "密碼更新成功" });
 });
 
 // 取得會員所有訂單資料
