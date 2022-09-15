@@ -72,6 +72,14 @@ app.use("/api/1.0/products", productsRouter);
 let productDetailRouter = require("./routers/productDetail");
 app.use("/api/1.0/productDetail", productDetailRouter);
 
+//食譜列表
+let recipesRouter = require("./routers/recipes");
+app.use("/api/1.0/recipes", recipesRouter);
+
+// 食譜詳細
+let recipeDetailRouter = require("./routers/recipeDetail");
+app.use("/api/1.0/recipeDetail", recipeDetailRouter);
+
 //404
 app.use((req, res, next) => {
   console.log("發生404");
