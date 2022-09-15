@@ -105,16 +105,45 @@ router.put("/:userId/modifyPassword", async (req, res) => {
 // 取得會員所有訂單資料
 router.get("/:userId/orders", async (req, res) => {
   let userId = req.params.userId;
-  console.log(userId);
+  let page = req.query.page || 1;
+  console.log("userId: ", userId, ", page: ", page);
+
+  // 一頁幾筆
+  const perPage = 5;
+
+  // --- 1. 分頁 TODO: 取得總筆數
+  let [total] = await pool.execute(
+    "SELECT COUNT(*) AS total FROM order_list WHERE user_id=?",
+    [userId]
+  );
+  total = total[0].total;
+  console.log("total", total);
+
+  // --- 2. 分頁 TODO: 計算總頁數 -> 從 total 與 perPage 算出總頁數 lastPage
+  // (hint: Math.ceil 無條件進位) <---> Math.floor 無條件捨去
+  const lastPage = Math.ceil(total / perPage);
+  console.log("lastPage", lastPage);
+
+  // --- 3. 分頁 TODO: 計算 offset (要跳過幾筆)
+  const offset = perPage * (page - 1);
+  console.log("offset", offset);
 
   // --- (2) 列出使用者訂單資料
   let [data] = await pool.execute(
-    "SELECT order_list.*, order_status.name AS order_status FROM order_list LEFT OUTER JOIN order_status ON order_list.status_id = order_status.id WHERE order_list.user_id=?",
-    [userId]
+    "SELECT order_list.*, order_status.name AS order_status FROM order_list LEFT OUTER JOIN order_status ON order_list.status_id = order_status.id WHERE order_list.user_id=? ORDER BY order_list.create_time DESC LIMIT ? OFFSET ?",
+    [userId, perPage, offset]
   );
-  console.log(data);
+  // console.log(data);
 
-  res.json(data);
+  res.json({
+    pagination: {
+      total, // 總共有幾筆
+      perPage, // 一頁有幾筆
+      page, // 目前在第幾頁
+      lastPage, // 總頁數
+    },
+    data,
+  });
 });
 
 module.exports = router;
