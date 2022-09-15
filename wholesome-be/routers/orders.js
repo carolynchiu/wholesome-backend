@@ -7,7 +7,7 @@ router.get("/:orderId", async (req, res) => {
   const orderId = req.params.orderId;
   console.log(`這裡是 orderId=${orderId}的訂單頁`);
   let [orderData] = await pool.execute(
-    "SELECT * FROM order_list LEFT JOIN coupons ON order_list.coupon_id =coupons.id WHERE order_list.id=?",
+    "SELECT order_list.*,coupons.name AS coupon_name, coupons.discount_price AS coupon_price FROM order_list LEFT JOIN coupons ON order_list.coupon_id =coupons.id WHERE order_list.id=?",
     [orderId]
   );
   let [data] = await pool.execute(
