@@ -151,23 +151,23 @@ router.get("/:userId/orders", async (req, res) => {
 // 新增會員優惠券資料
 router.post("/:userId/coupon", async (req, res) => {
   // --- (1) 確認資料有沒有收到
-  console.log("req.body", req.body);
+  // console.log("req.body", req.body);
   let userId = req.params.userId;
-  console.log("userId: ", userId);
+  // console.log("userId: ", userId);
   let discountCode = req.body.discount_code.toUpperCase();
-  console.log(discountCode);
+  // console.log(discountCode);
   // --- (2) 檢查資料庫是否有這張優惠券
   let [coupon] = await pool.execute(
     "SELECT * FROM coupons WHERE discount_code = ?",
     [discountCode]
   );
-  console.log(coupon);
-  let couponId = coupon[0].id;
+  // console.log(coupon);
   //如果沒有優惠券回覆錯誤
   if (coupon.length === 0) {
     return res.status(400).json({ message: "優惠券代碼輸入錯誤" });
   }
   // --- (3)檢查使用者是否領過這張優惠券
+  let couponId = coupon[0].id;
   let [userCoupon] = await pool.execute(
     "SELECT * FROM coupons_get WHERE user_id=? AND coupon_id=?",
     [userId, couponId]
@@ -182,5 +182,18 @@ router.post("/:userId/coupon", async (req, res) => {
   );
 
   res.json({ message: "優惠券新增成功" });
+});
+
+//取得所有使用者的優惠券資料
+router.get("/:userId/coupons", async (req, res) => {
+  let userId = req.params.userId;
+  console.log("userId", userId);
+  // --- (1) 列出使用者優惠券資料
+  let [result] = await pool.execute(
+    "SELECT coupons_get.* ,coupons.name AS coupon_name ,coupons.discount_code AS coupon_code, coupons.discount_price AS coupon_price,coupons.start_time AS coupon_start, coupons.end_time AS coupon_end FROM `coupons_get` JOIN coupons ON coupons_get.coupon_id = coupons.id WHERE coupons_get.user_id=?",
+    [userId]
+  );
+  console.log(result);
+  res.json(result);
 });
 module.exports = router;
