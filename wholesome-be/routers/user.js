@@ -184,7 +184,7 @@ router.post("/:userId/coupon", async (req, res) => {
   res.json({ message: "優惠券新增成功" });
 });
 
-//取得所有使用者的優惠券資料
+// 取得所有使用者的優惠券資料
 router.get("/:userId/coupons", async (req, res) => {
   let userId = req.params.userId;
   console.log("userId", userId);
@@ -195,5 +195,63 @@ router.get("/:userId/coupons", async (req, res) => {
   );
   console.log(result);
   res.json(result);
+});
+
+// 取得使用者收藏資料 (商品,食譜)
+router.get("/:userId/tracking", async (req, res) => {
+  let userId = req.params.userId;
+  let page = req.query.page || 1;
+  console.log("userId: ", userId, ", page: ", page);
+
+  // 一頁幾筆
+  const perPage = 6;
+
+  // --- 1. 分頁 TODO: 取得總筆數
+  let [productTotal] = await pool.execute(
+    "SELECT COUNT(*) AS productTotal FROM `user_like_product` WHERE user_id =?",
+    [userId]
+  );
+  productTotal = productTotal[0].productTotal;
+  let [recipeTotal] = await pool.execute(
+    "SELECT COUNT(*) AS recipeTotal FROM `user_like_recipe` WHERE user_id =?",
+    [userId]
+  );
+  recipeTotal = recipeTotal[0].recipeTotal;
+  console.log("productTotal", productTotal, "recipeTotal", recipeTotal);
+
+  // --- 2. 分頁 TODO: 計算總頁數
+  const productLastPage = Math.ceil(productTotal / perPage);
+  console.log("productLastPage", productLastPage);
+
+  const recipeLastPage = Math.ceil(recipeTotal / perPage);
+  console.log("recipeLastPage", recipeLastPage);
+  // --- 3. 分頁 TODO: 計算 offset (要跳過幾筆)
+  const offset = perPage * (page - 1);
+  console.log("offset", offset);
+
+  // --- (2) 列出使用者收藏資料 (商品+食譜)
+  let [productData] = await pool.execute(
+    "SELECT user_like_product.*,products.image AS product_img, products.name AS product_name,products.price AS product_price FROM `user_like_product` JOIN products ON user_like_product.product_id = products.id WHERE user_like_product.user_id=? LIMIT ? OFFSET ?",
+    [userId, perPage, offset]
+  );
+  let [recipeData] = await pool.execute(
+    "SELECT user_like_recipe.*, recipes.main_img AS recipe_img, recipes.title AS recipe_name FROM `user_like_recipe` JOIN recipes ON user_like_recipe.recipe_id = recipes.id WHERE user_like_recipe.user_id=? LIMIT ? OFFSET ?",
+    [userId, perPage, offset]
+  );
+
+  let productPagination = {
+    productTotal, // 總共有幾筆
+    perPage, // 一頁有幾筆
+    page, // 目前在第幾頁
+    productLastPage, // 總頁數
+  };
+  let recipePagination = {
+    recipeTotal, // 總共有幾筆
+    perPage, // 一頁有幾筆
+    page, // 目前在第幾頁
+    recipeLastPage, // 總頁數
+  };
+
+  res.json({ productPagination, productData, recipePagination, recipeData });
 });
 module.exports = router;
