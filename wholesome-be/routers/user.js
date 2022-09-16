@@ -4,6 +4,8 @@ const pool = require("../utils/database");
 const { body, validationResult } = require("express-validator"); //後端驗證
 const session = require("express-session");
 const bcrypt = require("bcrypt"); //密碼雜湊
+const dayjs = require("dayjs");
+const now = dayjs(new Date().toISOString()).format("YYYY-MM-DD HH:mm:ss");
 
 const editRules = [
   // 中間件 (1): 檢查 email 是否為正確格式
@@ -146,4 +148,39 @@ router.get("/:userId/orders", async (req, res) => {
   });
 });
 
+// 新增會員優惠券資料
+router.post("/:userId/coupon", async (req, res) => {
+  // --- (1) 確認資料有沒有收到
+  console.log("req.body", req.body);
+  let userId = req.params.userId;
+  console.log("userId: ", userId);
+  let discountCode = req.body.discount_code.toUpperCase();
+  console.log(discountCode);
+  // --- (2) 檢查資料庫是否有這張優惠券
+  let [coupon] = await pool.execute(
+    "SELECT * FROM coupons WHERE discount_code = ?",
+    [discountCode]
+  );
+  console.log(coupon);
+  let couponId = coupon[0].id;
+  //如果沒有優惠券回覆錯誤
+  if (coupon.length === 0) {
+    return res.status(400).json({ message: "優惠券代碼輸入錯誤" });
+  }
+  // --- (3)檢查使用者是否領過這張優惠券
+  let [userCoupon] = await pool.execute(
+    "SELECT * FROM coupons_get WHERE user_id=? AND coupon_id=?",
+    [userId, couponId]
+  );
+  if (userCoupon.length > 0) {
+    return res.status(400).json({ message: "您已領過此優惠券" });
+  }
+  // --- (4) 把資料存到資料庫 (複習 SQL 語法)
+  let result = await pool.execute(
+    "INSERT INTO coupons_get (user_id, coupon_id, get_time) VALUES (?,?,?)",
+    [userId, couponId, now]
+  );
+
+  res.json({ message: "優惠券新增成功" });
+});
 module.exports = router;
