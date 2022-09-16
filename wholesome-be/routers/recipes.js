@@ -26,8 +26,11 @@ router.get('/:category', async (req, res, next) => {
   // 分類資料
   console.log(page);
   let [data] = await pool.execute(
-    'SELECT *, recipes.id AS recipe_id,recipe_category.name AS category_name FROM recipes JOIN recipe_category ON recipes.category_id = recipe_category.id WHERE recipe_category.name= ? ORDER BY create_time LIMIT ? OFFSET ?',
+    'SELECT recipes.*, recipes.id AS recipe_id,recipe_category.name AS category_name FROM recipes JOIN recipe_category ON recipes.category_id = recipe_category.id WHERE recipe_category.name= ? ORDER BY create_time LIMIT ? OFFSET ?',
     [category, perPage, offset]
+  );
+  let [dataAll] = await pool.execute(
+    'SELECT recipes.*, recipes.id AS recipe_id,recipe_category.name AS category_name FROM recipes JOIN recipe_category ON recipes.category_id = recipe_category.id '
   );
   //資料給前端
 
@@ -39,6 +42,7 @@ router.get('/:category', async (req, res, next) => {
       lastPage,
     },
     data,
+    dataAll
   });
 });
 

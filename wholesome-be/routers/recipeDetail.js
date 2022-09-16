@@ -23,7 +23,7 @@ router.get('/:recipeId', async (req, res, next) => {
   );
 
   let [commentData] = await pool.execute(
-    'SELECT *, recipes.id AS recipe_id, users.id AS user_id FROM recipe_comment JOIN recipes ON recipes.id = recipe_id JOIN users ON users.id = user_id WHERE recipe_id =?',
+    'SELECT *, recipes.id AS recipe_id, users.id AS user_id FROM recipe_comment JOIN recipes ON recipes.id = recipe_id JOIN users ON users.id = user_id  WHERE recipe_id =? ORDER BY create_date DESC',
     [recipeId]
   );
 
@@ -88,17 +88,14 @@ router.get('/:recipeId', async (req, res, next) => {
       gradeSum,
       total,
       gradeAverage,
-      gradeCount1,
-      gradeCount2,
-      gradeCount3,
-      gradeCount4,
-      gradeCount5,
-      gradePercent1,
-      gradePercent2,
-      gradePercent3,
-      gradePercent4,
-      gradePercent5
     },
+    gradeInfo: [
+      { gradeCount: gradeCount1, gradePercent: gradePercent1 },
+      { gradeCount: gradeCount2, gradePercent: gradePercent2 },
+      { gradeCount: gradeCount3, gradePercent: gradePercent3 },
+      { gradeCount: gradeCount4, gradePercent: gradePercent4 },
+      { gradeCount: gradeCount5, gradePercent: gradePercent5 },
+    ],
   });
 });
 
