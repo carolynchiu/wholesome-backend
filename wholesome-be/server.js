@@ -68,11 +68,10 @@ app.use("/api/1.0/user", userRouter);
 let ordersRouter = require("./routers/orders");
 app.use("/api/1.0/orders", ordersRouter);
 
-// 商品列表
-let productsRouter = require("./routers/products");
-app.use("/api/1.0/products", productsRouter);
+//API 撈資料
+let productRouter = require("./routers/products");
+app.use("/api/1.0/products", productRouter);
 
-// 商品詳細
 let productDetailRouter = require("./routers/productDetail");
 app.use("/api/1.0/productDetail", productDetailRouter);
 
