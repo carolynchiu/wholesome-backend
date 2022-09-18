@@ -23,9 +23,14 @@ async function getProductComment(productId, perPage, offset) {
   return data;
 }
 
-async function getCommentCount(product_id){
+async function getCommentCount(product_id) {
   let [total] = await pool.execute("SELECT COUNT(*) AS total FROM products_comment WHERE product_id = ? ",[product_id])
   return total[0].total
 }
 
-module.exports = { getSingleProduct, getProductComment, getCommentCount };
+async function getRelatedGoods(categoryId, product_id) {
+  let [goods] = await pool.execute('SELECT * FROM products WHERE category_id = ? AND id != ?',[categoryId, product_id])
+  return goods; 
+}
+
+module.exports = { getSingleProduct, getProductComment, getCommentCount, getRelatedGoods };

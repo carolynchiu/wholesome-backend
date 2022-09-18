@@ -11,6 +11,10 @@ async function getProductDetail(req, res, next) {
   let productData = await productDetailModel.getSingleProduct(productId);
   // console.log("productData", productData);
 
+  let categoryId =parseInt(productData.map((v)=>v.category_id))
+  console.log('category',categoryId)
+
+
   
   const perPage = 5;
 
@@ -25,8 +29,9 @@ async function getProductDetail(req, res, next) {
   console.log('perPage',perPage)
   
   let productComment = await productDetailModel.getProductComment(productId, perPage, offset);
-  console.log('productComment',productComment.length)
+  // console.log('productComment',productComment.length)
 
+  
   let eachStar = productComment.map((v) => v.grade);
   let starCount = eachStar.length;
 
@@ -41,6 +46,9 @@ async function getProductDetail(req, res, next) {
   console.log(totalScore);
   console.log(starCount);
   console.log(average);
+
+  let relatedGoods = await productDetailModel.getRelatedGoods(categoryId, productId)
+  // console.log('related goods', relatedGoods)
 
   res.json({
     productData,
@@ -57,6 +65,7 @@ async function getProductDetail(req, res, next) {
       starCount,
       average,
     },
+    relatedGoods,
   });
 }
 
