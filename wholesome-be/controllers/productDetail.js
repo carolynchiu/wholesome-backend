@@ -2,9 +2,29 @@ const productDetailModel = require("../models/productDetail");
 
 // 商品細節頁
 async function getProductDetail(req, res, next) {
+
+  const isLike= req.query.like
+  console.log('isLike',isLike)
+
+  const userId = req.query.user
+  console.log('user',userId)
+
   //前端送出請求時帶的參數:productId
   const productId = req.params.productId;
   console.log("productId in be", productId);
+
+  //先讀likeList 是否有這個使用者的這個產品收藏資料
+  let likeData = await productDetailModel.getLikeLIst(userId, productId)
+  // console.log('likeList', getLikeLIst)
+  // console.log("getLikeList",getLikeLIst.length)
+
+  // if (getLikeLIst.length < 0) {
+  //   //如果沒有資料則回傳否
+  //   likeData = false
+  //   productDetailModel.newLIke(userId, productId)
+  // } else {
+  //   likeData = productDetailModel.updateLike(isLike, userId, productId)
+  // }    
 
   const page = req.query.page || 1
 
@@ -66,6 +86,8 @@ async function getProductDetail(req, res, next) {
       average,
     },
     relatedGoods,
+
+    likeData,
   });
 }
 

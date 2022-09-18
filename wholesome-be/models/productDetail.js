@@ -6,8 +6,8 @@ async function getSingleProduct(productId) {
     "SELECT * FROM products JOIN products_category on products.category_id = products_category.category_id WHERE id = ?",
     [productId]
   );
-  console.log("single product data", data);
-  console.log("data.main_category", data[0].main_category);
+  // console.log("single product data", data);
+  // console.log("data.main_category", data[0].main_category);
   if (data.length > 0) {
     return data;
   } else {
@@ -33,4 +33,17 @@ async function getRelatedGoods(categoryId, product_id) {
   return goods; 
 }
 
-module.exports = { getSingleProduct, getProductComment, getCommentCount, getRelatedGoods };
+async function getLikeLIst(userId, productId){
+  let [data] = await pool.execute('SELECT valid FROM user_like_product WHERE  user_id = ? AND  product_id = ?',[userId, productId])
+  return data;
+}
+
+async function newLIke(userId, productId){
+  let result = await pool.execute('INSERT INTO user_like_product (user_id, product_id, valid) VALUES( ?, ?, ? )',[userId, productId, 1])
+}
+
+async function updateLike(isLike, userId, productId){
+  let result = await pool.execute('UPDATE `user_like_product` SET  valid = ?  WHERE user_id = ? AND product_id= ?',[isLike, userId, productId])
+}
+
+module.exports = { getSingleProduct, getProductComment, getCommentCount, getRelatedGoods, getLikeLIst, newLIke, updateLike };
