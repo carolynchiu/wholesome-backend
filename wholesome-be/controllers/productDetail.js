@@ -6,11 +6,26 @@ async function getProductDetail(req, res, next) {
   const productId = req.params.productId;
   console.log("productId in be", productId);
 
-  let productData = await productDetailModel.getSingleProduct(productId);
-  console.log("productData", productData);
+  const page = req.query.page || 1
 
-  let productComment = await productDetailModel.getProductComment(productId);
-  // console.log('productComment',productComment)
+  let productData = await productDetailModel.getSingleProduct(productId);
+  // console.log("productData", productData);
+
+  
+  const perPage = 5;
+
+  let total = await productDetailModel.getCommentCount(productId)
+  // console.log("commentCount",total)
+
+  let totalPage = Math.ceil(total / perPage);
+  
+  // 計算offset
+  const offset = perPage * (page - 1)
+  console.log('offset',offset)
+  console.log('perPage',perPage)
+  
+  let productComment = await productDetailModel.getProductComment(productId, perPage, offset);
+  console.log('productComment',productComment.length)
 
   let eachStar = productComment.map((v) => v.grade);
   let starCount = eachStar.length;
@@ -29,6 +44,12 @@ async function getProductDetail(req, res, next) {
 
   res.json({
     productData,
+    pagination:{
+      total,
+      perPage,
+      page,
+      totalPage,
+    },
     comment: {
       productComment,
       eachStar,

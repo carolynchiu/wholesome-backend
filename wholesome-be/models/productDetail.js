@@ -16,12 +16,16 @@ async function getSingleProduct(productId) {
   }
 }
 //評論資訊
-async function getProductComment(productId) {
+async function getProductComment(productId, perPage, offset) {
   let [data] = await pool.execute(
-    "SELECT products_comment.id, products_comment.product_id, products_comment.comment, products_comment.grade, products_comment.user_id, products_comment.time , users.name FROM products_comment INNER JOIN users ON products_comment.user_id = users.id WHERE product_id = ? ORDER BY grade DESC ",
-    [productId]
+    "SELECT products_comment.id, products_comment.product_id, products_comment.comment, products_comment.grade, products_comment.user_id, products_comment.time , users.name FROM products_comment INNER JOIN users ON products_comment.user_id = users.id WHERE product_id = ? ORDER BY grade DESC LIMIT ? OFFSET ? ",[productId, perPage, offset]
   );
   return data;
 }
 
-module.exports = { getSingleProduct, getProductComment };
+async function getCommentCount(product_id){
+  let [total] = await pool.execute("SELECT COUNT(*) AS total FROM products_comment WHERE product_id = ? ",[product_id])
+  return total[0].total
+}
+
+module.exports = { getSingleProduct, getProductComment, getCommentCount };
