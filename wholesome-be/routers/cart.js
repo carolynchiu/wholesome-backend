@@ -12,25 +12,27 @@ router.post("/:userId", async (req, res) => {
   //   "SELECT count(*) AS cartItem FROM `cart`"
   // );
   // console.log(cartItemCount);
-  // if (req.body.length === 0) {
+  // 第一筆加入購物車的商品
+  // if (req.body.length === 0) res.json({ message: "購物車無商品" });
+  // if (req.body.length === 1) {
   //   let result = await pool.execute(
   //     "INSERT INTO cart (product_id, user_id, amount) VALUES (?,?,?)",
-  //     [newAddProd, userId, 1]
+  //     [req.body[0].id, userId, 1]
   //   );
   // }
   // --- (2) 檢查購物車資料表是否有這筆商品
-  // let newAddProduct = req.body.pop();
-  // console.log("新增的商品", newAddProduct);
+  // let newAddItem = req.body.pop();
+  // console.log("新增的商品", newAddItem);
   // let [cart] = await pool.execute("SELECT * FROM cart WHERE product_id = ?", [
-  //   newAddProduct.id,
+  //   newAddItem.id,
   // ]);
   // if (cart.length > 0) res.json({ message: "商品已存在於購物車" });
   // // --- (3) 把商品資料存到購物車資料表
   // let result = await pool.execute(
   //   "INSERT INTO cart (product_id, user_id, amount) VALUES (?,?,?)",
-  //   [newAddProduct.id, userId, 1]
+  //   [newAddItem.id, userId, 1]
   // );
-  res.json({ message: "購物車新增成功" });
+  // res.json({ message: "購物車新增成功" });
 });
 
 module.exports = router;
