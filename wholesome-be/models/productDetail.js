@@ -34,16 +34,17 @@ async function getRelatedGoods(categoryId, product_id) {
 }
 
 async function getLikeLIst(userId, productId){
-  let [data] = await pool.execute('SELECT valid FROM user_like_product WHERE  user_id = ? AND  product_id = ?',[userId, productId])
+  let [data] = await pool.execute('SELECT valid AS valid FROM user_like_product WHERE  user_id = ? AND  product_id = ?',[userId, productId])
   return data;
 }
 
 async function newLIke(userId, productId){
-  let result = await pool.execute('INSERT INTO user_like_product (user_id, product_id, valid) VALUES( ?, ?, ? )',[userId, productId, 1])
+  let result = await pool.execute('INSERT INTO user_like_product (user_id, product_id, valid) VALUES( ?, ?, ? )',[userId, productId, 0])
 }
 
 async function updateLike(isLike, userId, productId){
   let result = await pool.execute('UPDATE `user_like_product` SET  valid = ?  WHERE user_id = ? AND product_id= ?',[isLike, userId, productId])
+  return result
 }
 
 module.exports = { getSingleProduct, getProductComment, getCommentCount, getRelatedGoods, getLikeLIst, newLIke, updateLike };
