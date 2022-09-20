@@ -8,12 +8,7 @@ async function getProductDetail(req, res, next) {
   //前端送出請求時帶的參數:productId
   const productId = req.params.productId;
   // console.log("productId in be", productId);
-  //先讀likeList 是否有這個使用者的這個產品收藏資料
-  let likeData = await productDetailModel.getLikeLIst(userId, productId)
-  console.log('likeData', likeData)
 
-  likeData.length < 0 ? valid = 0 : valid = parseInt(likeData.map((v)=>v.valid))
-  console.log('valid',   valid)
 
   const page = req.query.page || 1
   
@@ -77,8 +72,6 @@ async function getProductDetail(req, res, next) {
       average,
     },
     relatedGoods,
-    likeData,
-    valid
   });
 }
 
