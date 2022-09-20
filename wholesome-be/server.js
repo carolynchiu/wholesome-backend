@@ -80,6 +80,10 @@ app.use("/api/1.0/recipes", recipesRouter);
 let recipeDetailRouter = require("./routers/recipeDetail");
 app.use("/api/1.0/recipeDetail", recipeDetailRouter);
 
+//食譜評論
+let recipeReview = require("./routers/recipeReview");
+app.use("/api/1.0/",recipeReview)
+
 //404
 app.use((req, res, next) => {
   console.log("發生404");
