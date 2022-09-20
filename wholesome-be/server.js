@@ -47,7 +47,7 @@ app.use((req, res, next) => {
   next();
 });
 
-//路由中間件
+// 路由中間件
 // app.[method]
 // method: get, post, delete, put, patch, ...
 // 首頁
@@ -56,19 +56,23 @@ app.get("/", (req, res) => {
   res.send("Hello Wholesome");
 });
 
-//註冊、登入、登出
+// --- 註冊、登入、登出
 let authRouter = require("./routers/auth");
 app.use("/api/1.0/auth", authRouter);
 
-//會員資料
+// --- 會員資料
 let userRouter = require("./routers/user");
 app.use("/api/1.0/user", userRouter);
 
-// 商品列表
-let productsRouter = require("./routers/products");
-app.use("/api/1.0/products", productsRouter);
+// --- 訂單資料
+let ordersRouter = require("./routers/orders");
+app.use("/api/1.0/orders", ordersRouter);
 
-// 商品詳細
+// --- 商品列表
+let productRouter = require("./routers/products");
+app.use("/api/1.0/products", productRouter);
+
+// --- 商品詳細
 let productDetailRouter = require("./routers/productDetail");
 app.use("/api/1.0/productDetail", productDetailRouter);
 
@@ -83,6 +87,17 @@ app.use("/api/1.0/recipeDetail", recipeDetailRouter);
 //食譜評論
 let recipeReview = require("./routers/recipeReview");
 app.use("/api/1.0/",recipeReview)
+// --- 商品收藏
+let productTrackingRouter = require("./routers/productTracking");
+app.use("/api/1.0/productTracking", productTrackingRouter);
+
+// --- 食譜收藏
+let recipeTrackingRouter = require("./routers/recipeTracking");
+app.use("/api/1.0/recipeTracking", recipeTrackingRouter);
+
+// 購物車
+let cartRouter = require("./routers/cart");
+app.use("/api/1.0/cart", cartRouter);
 
 //404
 app.use((req, res, next) => {
