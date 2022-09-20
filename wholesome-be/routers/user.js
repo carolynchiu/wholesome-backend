@@ -177,8 +177,8 @@ router.post("/:userId/coupon", async (req, res) => {
   }
   // --- (4) 把資料存到資料庫 (複習 SQL 語法)
   let result = await pool.execute(
-    "INSERT INTO coupons_get (user_id, coupon_id, get_time) VALUES (?,?,?)",
-    [userId, couponId, now]
+    "INSERT INTO coupons_get (user_id, coupon_id, get_time, valid) VALUES (?,?,?,?)",
+    [userId, couponId, now, 1]
   );
 
   res.json({ message: "優惠券新增成功" });
