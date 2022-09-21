@@ -80,8 +80,8 @@ app.use("/api/1.0/productDetail", productDetailRouter);
 let productCommentRouter = require("./routers/productComments");
 app.use("/api/1.0/productComments",productCommentRouter);
 
-
-// === 相關商品
+let newProductsRouter= require("./routers/newProducts");
+app.use("/api/1.0/newProducts", newProductsRouter);
 
 // 食譜列表
 let recipesRouter = require("./routers/recipes");
