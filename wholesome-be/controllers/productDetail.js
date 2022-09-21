@@ -53,11 +53,8 @@ async function getProductDetail(req, res, next) {
   // console.log(starCount);
   // console.log(average);
 
-  let relatedGoods = await productDetailModel.getRelatedGoods(
-    categoryId,
-    productId
-  );
-  // console.log('related goods', relatedGoods)
+  let relatedGoods = await productDetailModel.getRelatedGoods(categoryId,productId);
+  console.log('related goods', relatedGoods)
 
   res.json({
     productData,
@@ -68,7 +65,6 @@ async function getProductDetail(req, res, next) {
       totalPage,
     },
     comment: {
-      productComment,
       eachStar,
       totalScore,
       starCount,
@@ -78,30 +74,4 @@ async function getProductDetail(req, res, next) {
   });
 }
 
-//商品收藏
-async function changeLike(req, res, next) {
-  let userId = req.query.userId;
-  let productId = req.params.productId;
-  if (req.query.like === "true") {
-    isLike = 1;
-  } else {
-    isLike = 0;
-  }
-
-  let likeData = await productDetailModel.getLikeLIst(userId, productId);
-  console.log("likeData", likeData);
-
-  if (likeData.length === 0) {
-    //如果沒有資料則回傳否
-    likeData = false;
-    let newData = await productDetailModel.newLIke(userId, productId);
-    console.log("無資料");
-  } else {
-    console.log("有資料", likeData[0]);
-    await productDetailModel.updateLike(isLike, userId, productId);
-    checkData = await productDetailModel.getLikeLIst(userId, productId);
-    console.log("checkData", checkData);
-  }
-}
-
-module.exports = { getProductDetail, changeLike };
+module.exports = { getProductDetail};
