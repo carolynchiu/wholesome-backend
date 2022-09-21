@@ -2,14 +2,13 @@ const productDetailModel = require("../models/productDetail");
 
 // 商品細節頁
 async function getProductDetail(req, res, next) {
-  const userId = req.query.user;
-  // console.log('user',userId)
+ 
+
 
   //前端送出請求時帶的參數:productId
   const productId = req.params.productId;
   // console.log("productId in be", productId);
 
-  const page = req.query.page || 1;
 
   //商品細節資料
   let productData = await productDetailModel.getSingleProduct(productId);
@@ -18,23 +17,11 @@ async function getProductDetail(req, res, next) {
   let categoryId = parseInt(productData.map((v) => v.category_id));
   // console.log('category',categoryId)
 
-  const perPage = 5;
 
-  let total = await productDetailModel.getCommentCount(productId);
-  // console.log("commentCount",total)
 
-  let totalPage = Math.ceil(total / perPage);
-
-  // 計算offset
-  const offset = perPage * (page - 1);
-  // console.log('offset',offset)
-  // console.log('perPage',perPage)
-
-  //
+  //商品評分
   let productComment = await productDetailModel.getProductComment(
     productId,
-    perPage,
-    offset
   );
   // console.log('productComment',productComment)
 
@@ -53,18 +40,13 @@ async function getProductDetail(req, res, next) {
   // console.log(starCount);
   // console.log(average);
 
+  //相關商品
   let relatedGoods = await productDetailModel.getRelatedGoods(categoryId,productId);
-  console.log('related goods', relatedGoods)
+  // console.log('related goods', relatedGoods)
 
   res.json({
     productData,
-    pagination: {
-      total,
-      perPage,
-      page,
-      totalPage,
-    },
-    comment: {
+    stars: {
       eachStar,
       totalScore,
       starCount,

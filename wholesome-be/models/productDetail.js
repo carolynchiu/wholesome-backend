@@ -18,7 +18,7 @@ async function getSingleProduct(productId) {
 //評論資訊
 async function getProductComment(productId, perPage, offset) {
   let [data] = await pool.execute(
-    "SELECT products_comment.id, products_comment.product_id, products_comment.comment, products_comment.grade, products_comment.user_id, products_comment.time , users.name FROM products_comment INNER JOIN users ON products_comment.user_id = users.id WHERE product_id = ? ORDER BY grade DESC LIMIT ? OFFSET ? ",[productId, perPage, offset]
+    "SELECT products_comment.id, products_comment.product_id, products_comment.comment, products_comment.grade, products_comment.user_id, products_comment.time , users.name FROM products_comment INNER JOIN users ON products_comment.user_id = users.id WHERE product_id = ? ORDER BY grade DESC ",[productId]
   );
   return data;
 }
