@@ -5,7 +5,7 @@ const dayjs = require('dayjs')
 
 router.post("/:userId", async (req, res) => {
  
-  // console.log(req.body)
+  console.log(req.body)
   const user_id = req.body.user.id
   const coupon_id= req.body.selectCoupon
   const receiver_name = req.body.receiver.receiver_name
@@ -21,19 +21,21 @@ router.post("/:userId", async (req, res) => {
   let [order_length] = await pool.execute('SELECT COUNT(*) AS total FROM order_list') 
   // console.log(order_length[0].total)
 
+  const lastOrder=order_length[0].total+1
 
-  const order_sn = `W`+`${date}`+"O"+`${order_length[0].total+1}`+'U'+`${user_id}`
+
+  const order_sn = `W`+`${date}`+"O"+`${lastOrder}`+'U'+`${user_id}`
   // console.log('order_sn',order_sn)
   let data = await pool.execute('INSERT INTO order_list (order_sn , user_id, coupon_id, status_id , total_price, valid, receiver_name, receiver_phone, receiver_address, create_time  ) VALUES(?,?,?,?,?,?,?,?,?,?)',[order_sn, user_id, coupon_id,3, total_price,1,receiver_name, receiver_phone, receiver_address, create_time])
  
-  const cart = req.body.cart.map((v,i)=>{return[order_length[0].total+1,v.id,v.price,v.amount]})
+  const cart = req.body.cart.map((v,i)=>{return[lastOrder,v.id,v.price,v.amount]})
   console.log('cart array', cart)
 
   let detail = await pool.query('INSERT INTO order_detail (order_id, product_id, product_price, amount ) VALUES ? ',[cart])
 
   
 
-  res.json({ message: "結帳成功" })
+  res.json({lastOrder ,message: "結帳成功" })
 });
 
 module.exports = router;
