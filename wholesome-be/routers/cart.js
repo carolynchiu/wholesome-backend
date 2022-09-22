@@ -1,39 +1,31 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../utils/database");
+const dayjs = require('dayjs')
 
 router.post("/:userId", async (req, res) => {
-  // --- (1) 確認資料有沒有收到
-  console.log("購物車item", req.body);
-  let userId = req.params.userId;
-  console.log(userId);
-  // --- (2)檢查購物車資料表是否為空
-  // let [cartItemCount] = await pool.execute(
-  //   "SELECT count(*) AS cartItem FROM `cart`"
-  // );
-  // console.log(cartItemCount);
-  // 第一筆加入購物車的商品
-  // if (req.body.length === 0) res.json({ message: "購物車無商品" });
-  // if (req.body.length === 1) {
-  //   let result = await pool.execute(
-  //     "INSERT INTO cart (product_id, user_id, amount) VALUES (?,?,?)",
-  //     [req.body[0].id, userId, 1]
-  //   );
-  // }
-  // --- (2) 檢查購物車資料表是否有這筆商品
-  // let newAddItem = req.body.pop();
-  // console.log("新增的商品", newAddItem);
-  // let [cart] = await pool.execute("SELECT * FROM cart WHERE product_id = ?", [
-  //   newAddItem.id,
-  // ]);
-  // console.log("cart", cart);
-  // if (cart.length > 0) res.json({ message: "商品已存在於購物車" });
-  // // // --- (3) 把商品資料存到購物車資料表
-  // let result = await pool.execute(
-  //   "INSERT INTO cart (product_id, user_id, amount) VALUES (?,?,?)",
-  //   [newAddItem.id, userId, 1]
-  // );
-  res.json({ message: "購物車新增成功" });
+ 
+  console.log(req.body)
+  const user_id = req.body.user.id
+  const coupon_id= req.body.selectCoupon
+  const receiver_name = req.body.receiver.receiver_name
+  const receiver_phone= req.body.receiver.receiver_phone
+  const receiver_address = req.body.receiver.receiver_address
+  const total_price= req.body.cartTotalPrice
+
+  const date = dayjs(new Date().toISOString()).format('YYYYMMDD')
+  console.log('date',date)
+
+  let [order_length] = await pool.execute('SELECT COUNT(*) AS total FROM order_list') 
+  console.log(order_length[0].total)
+
+  const order_sn = `W`+`${date}`+"O"+`${order_length[0].total+1}`+'U'+`${user_id}`
+  console.log('order_sn',order_sn)
+  let data = await pool.execute('INSERT INTO order_list (order_sn , user_id, coupon_id, status_id , total_price, valid, receiver_name, receiver_phone, receiver_address  ) VALUES(?,?,?,?,?,?,?,?,?)',[order_sn, user_id, coupon_id,3, total_price,1,receiver_name, receiver_phone, receiver_address])
+
+  TODO:
+
+  res.json({ message: "購物車新增成功" })
 });
 
 module.exports = router;
