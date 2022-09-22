@@ -101,4 +101,4 @@ async function getProductList(req, res, next){
 }
 
 
-module.exports= {getProductList, getProductDetail};
+module.exports= {getProductList};
