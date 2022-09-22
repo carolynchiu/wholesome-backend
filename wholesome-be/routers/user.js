@@ -189,12 +189,19 @@ router.get("/:userId/coupons", async (req, res) => {
   let userId = req.params.userId;
   console.log("userId", userId);
   // --- (1) 列出使用者優惠券資料
-  let [result] = await pool.execute(
+  //所有優惠券
+  let [couponsAll] = await pool.execute(
     "SELECT coupons_get.* ,coupons.name AS coupon_name ,coupons.discount_code AS coupon_code, coupons.discount_price AS coupon_price,coupons.start_time AS coupon_start, coupons.end_time AS coupon_end FROM `coupons_get` JOIN coupons ON coupons_get.coupon_id = coupons.id WHERE coupons_get.user_id=?",
     [userId]
   );
-  console.log(result);
-  res.json(result);
+  //可以用的優惠券 valid = 1 ---> 購物車頁面要的資料
+  let [couponsCanUse] = await pool.execute(
+    "SELECT coupons_get.* ,coupons.name AS coupon_name ,coupons.discount_code AS coupon_code, coupons.discount_price AS coupon_price,coupons.start_time AS coupon_start, coupons.end_time AS coupon_end FROM `coupons_get` JOIN coupons ON coupons_get.coupon_id = coupons.id WHERE coupons_get.user_id=? AND coupons_get.valid=?",
+    [userId, 1]
+  );
+  console.log(couponsAll, couponsCanUse);
+  // 回覆前端需要的資料
+  res.json({ couponsAll, couponsCanUse });
 });
 
 // 取得使用者收藏資料 (商品,食譜)
