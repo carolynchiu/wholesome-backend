@@ -6,6 +6,7 @@ const session = require("express-session");
 const bcrypt = require("bcrypt"); //密碼雜湊
 const dayjs = require("dayjs");
 const now = dayjs(new Date().toISOString()).format("YYYY-MM-DD HH:mm:ss");
+const time = dayjs(new Date().toISOString()).format("YYYY-MM-DD");
 
 const editRules = [
   // 中間件 (1): 檢查 email 是否為正確格式
@@ -261,4 +262,35 @@ router.get("/:userId/tracking", async (req, res) => {
 
   res.json({ productPagination, productData, recipePagination, recipeData });
 });
+
+// 新增使用者商品評論資料
+router.post("/:userId/productComment", async (req, res) => {
+  // --- (1) 有沒有收到資料
+  let userId = +req.params.userId;
+  let productId = +req.query.product;
+  let grade = req.body.grade;
+  let comment = req.body.comment;
+  console.log({
+    user: userId,
+    product: productId,
+    grade: grade,
+    comment: comment,
+  });
+  // --- (2)檢查使用者有沒有評論過此商品
+  let [productComment] = await pool.execute(
+    "SELECT * FROM `products_comment` WHERE user_id = ? AND product_id = ?",
+    [userId, productId]
+  );
+  console.log("已經評論過", productComment);
+  if (productComment.length > 0) {
+    return res.status(400).json({ message: "您已評論過此商品" });
+  }
+  // --- (3) 如果沒有評論過寫入資料庫
+  let result = await pool.execute(
+    "INSERT INTO `products_comment` (user_id, product_id, comment, grade, valid, time) VALUES (?,?,?,?,?,?)",
+    [userId, productId, comment, grade, 1, time]
+  );
+  res.json({ message: "商品評論成功" });
+});
+
 module.exports = router;
