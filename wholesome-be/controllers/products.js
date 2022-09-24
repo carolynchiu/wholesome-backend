@@ -16,7 +16,7 @@ async function getProductList(req, res, next){
     
 
     //每一列表頁有幾筆資料
-    const perPage = 15;
+    const perPage = 18;
 
     //總筆數
     
