@@ -16,13 +16,13 @@ if(likeData.length > 0){
 
 router.post('/:recipeId',async(req,res,next)=>{
     //確認資料有沒有收到
-    console.log('like',req.body);
-    //檢查userid有沒有重複
+    console.log('like11',req.body);
+    //檢查有沒有重複
     let [likeRecipe] = await pool.execute('SELECT * FROM user_like_recipe WHERE user_id =? AND recipe_id = ?',[req.body.user.id, req.params.recipeId])
-
-    if(likeRecipe.length > 0){
+    if(req.body.isLike == false){
+        // 若狀態為false 刪除該筆收藏
         pool.execute('DELETE FROM user_like_recipe WHERE user_id =? AND recipe_id = ?',[req.body.user.id, req.params.recipeId])
-    }else{
+    }else if(likeRecipe.length == 0 && req.body.isLike == true){
         //資料存到資料庫
         pool.execute('INSERT INTO user_like_recipe (user_id,recipe_id) VALUES(?,?)',[req.body.user.id, req.params.recipeId])
     }
