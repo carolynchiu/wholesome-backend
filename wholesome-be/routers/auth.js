@@ -33,6 +33,24 @@ router.post("/register", registerRules, async (req, res) => {
   const validationError = validationResult(req);
   console.log("validationError", validationError);
   // 如果有錯誤訊息，就回覆給前端
+  if (!req.body.name) {
+    return res.status(400).json({ message: "請填寫姓名欄位" });
+  }
+  if (!req.body.email) {
+    return res.status(400).json({ message: "請填寫電子信箱欄位" });
+  }
+  if (!req.body.phone) {
+    return res.status(400).json({ message: "請填寫手機欄位" });
+  }
+  if (!req.body.birthday) {
+    return res.status(400).json({ message: "請填寫生日欄位" });
+  }
+  if (!req.body.password) {
+    return res.status(400).json({ message: "請填寫密碼欄位" });
+  }
+  if (!req.body.confirmPassword) {
+    return res.status(400).json({ message: "請填寫密碼確認欄位" });
+  }
   if (!validationError.isEmpty()) {
     return res.status(400).json({ errors: validationError.array() });
   }
