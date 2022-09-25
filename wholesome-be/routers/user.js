@@ -36,6 +36,21 @@ router.put("/:userId", editRules, async (req, res) => {
   const validationError = validationResult(req);
   console.log("validationError", validationError);
   // 如果有錯誤訊息，就回覆給前端
+  if (!req.body.name) {
+    return res.status(400).json({ message: "請填寫姓名欄位！" });
+  }
+  if (!req.body.email) {
+    return res.status(400).json({ message: "請填寫電子信箱欄位！" });
+  }
+  if (!req.body.birthday) {
+    return res.status(400).json({ message: "請填寫出生日期欄位！" });
+  }
+  if (!req.body.phone) {
+    return res.status(400).json({ message: "請填寫手機欄位！" });
+  }
+  if (!req.body.address) {
+    return res.status(400).json({ message: "請填寫地址欄位！" });
+  }
   if (!validationError.isEmpty()) {
     return res.status(400).json({ errors: validationError.array() });
   }
@@ -70,6 +85,17 @@ router.put("/:userId/modifyPassword", async (req, res) => {
   console.log("req.body", req.body);
   let userId = req.params.userId;
   console.log(`修改會員${userId}的密碼`);
+
+  // --- (1.5) 資料的驗證（後端不可以相信來自前端的資料）
+  if (!req.body.password) {
+    return res.status(400).json({ message: "請填目前的密碼！" });
+  }
+  if (!req.body.newPassword) {
+    return res.status(400).json({ message: "請填寫新的密碼！" });
+  }
+  if (!req.body.confirmNewPassword) {
+    return res.status(400).json({ message: "請填再次填寫新的密碼！" });
+  }
 
   // --- (2) TODO:取得資料庫的密碼
   let [password] = await pool.execute(
