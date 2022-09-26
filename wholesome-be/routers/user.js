@@ -333,9 +333,11 @@ router.get("/:userId/productComment", async (req, res) => {
   );
   console.log("已經評論過", productComment);
   if (productComment.length > 0) {
-    return res.status(400).json({ message: "您已評論過此商品" });
+    return res
+      .status(400)
+      .json({ message: "您已評論過此商品", userIsComment: true });
   }
-  res.json({ message: "您可以評論此商品" });
+  res.json({ message: "您可以評論此商品", userIsComment: false });
 });
 
 module.exports = router;
