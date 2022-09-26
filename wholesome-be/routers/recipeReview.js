@@ -21,10 +21,11 @@ router.post('/recipeReview/:recipeId',async(req,res,next)=>{
   let DATE = new Date().toISOString().substring(0, 10);
   console.log (DATE)
   //資料存到資料庫
-  pool.execute('INSERT INTO recipe_comment (user_id,recipe_id,comment,grade,create_date,valid) VALUES(?,?,?,?,?,?)',[req.body.user.id, req.params.recipeId,req.body.review,req.body.reviewStar,DATE,1])
+  await pool.execute('INSERT INTO recipe_comment (user_id,recipe_id,comment,grade,create_date,valid) VALUES(?,?,?,?,?,?)',[req.body.user.id, req.params.recipeId,req.body.review,req.body.reviewStar,DATE,1])
+  
   //回覆前端
-
-  res.json({message:'ok'})
+  console.log()
+  res.json({message:'OK'})
 })
 
 
