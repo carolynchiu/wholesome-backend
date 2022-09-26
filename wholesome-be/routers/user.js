@@ -319,4 +319,23 @@ router.post("/:userId/productComment", async (req, res) => {
   res.json({ message: "商品評論成功" });
 });
 
+router.get("/:userId/productComment", async (req, res) => {
+  let userId = +req.params.userId;
+  let productId = +req.query.product;
+  console.log({
+    user: userId,
+    product: productId,
+  });
+  // --- (2)檢查使用者有沒有評論過此商品
+  let [productComment] = await pool.execute(
+    "SELECT * FROM `products_comment` WHERE user_id = ? AND product_id = ?",
+    [userId, productId]
+  );
+  console.log("已經評論過", productComment);
+  if (productComment.length > 0) {
+    return res.status(400).json({ message: "您已評論過此商品" });
+  }
+  res.json({ message: "您可以評論此商品" });
+});
+
 module.exports = router;
