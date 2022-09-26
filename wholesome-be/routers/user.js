@@ -6,6 +6,7 @@ const session = require("express-session");
 const bcrypt = require("bcrypt"); //密碼雜湊
 const dayjs = require("dayjs");
 const now = dayjs(new Date().toISOString()).format("YYYY-MM-DD HH:mm:ss");
+const time = dayjs(new Date().toISOString()).format("YYYY-MM-DD");
 
 const editRules = [
   // 中間件 (1): 檢查 email 是否為正確格式
@@ -35,6 +36,21 @@ router.put("/:userId", editRules, async (req, res) => {
   const validationError = validationResult(req);
   console.log("validationError", validationError);
   // 如果有錯誤訊息，就回覆給前端
+  if (!req.body.name) {
+    return res.status(400).json({ message: "請填寫姓名欄位！" });
+  }
+  if (!req.body.email) {
+    return res.status(400).json({ message: "請填寫電子信箱欄位！" });
+  }
+  if (!req.body.birthday) {
+    return res.status(400).json({ message: "請填寫出生日期欄位！" });
+  }
+  if (!req.body.phone) {
+    return res.status(400).json({ message: "請填寫手機欄位！" });
+  }
+  if (!req.body.address) {
+    return res.status(400).json({ message: "請填寫地址欄位！" });
+  }
   if (!validationError.isEmpty()) {
     return res.status(400).json({ errors: validationError.array() });
   }
@@ -69,6 +85,17 @@ router.put("/:userId/modifyPassword", async (req, res) => {
   console.log("req.body", req.body);
   let userId = req.params.userId;
   console.log(`修改會員${userId}的密碼`);
+
+  // --- (1.5) 資料的驗證（後端不可以相信來自前端的資料）
+  if (!req.body.password) {
+    return res.status(400).json({ message: "請填目前的密碼！" });
+  }
+  if (!req.body.newPassword) {
+    return res.status(400).json({ message: "請填寫新的密碼！" });
+  }
+  if (!req.body.confirmNewPassword) {
+    return res.status(400).json({ message: "請填再次填寫新的密碼！" });
+  }
 
   // --- (2) TODO:取得資料庫的密碼
   let [password] = await pool.execute(
@@ -189,12 +216,19 @@ router.get("/:userId/coupons", async (req, res) => {
   let userId = req.params.userId;
   console.log("userId", userId);
   // --- (1) 列出使用者優惠券資料
-  let [result] = await pool.execute(
+  //所有優惠券
+  let [couponsAll] = await pool.execute(
     "SELECT coupons_get.* ,coupons.name AS coupon_name ,coupons.discount_code AS coupon_code, coupons.discount_price AS coupon_price,coupons.start_time AS coupon_start, coupons.end_time AS coupon_end FROM `coupons_get` JOIN coupons ON coupons_get.coupon_id = coupons.id WHERE coupons_get.user_id=?",
     [userId]
   );
-  console.log(result);
-  res.json(result);
+  //可以用的優惠券 valid = 1 ---> 購物車頁面要的資料
+  let [couponsCanUse] = await pool.execute(
+    "SELECT coupons_get.* ,coupons.name AS coupon_name ,coupons.discount_code AS coupon_code, coupons.discount_price AS coupon_price,coupons.start_time AS coupon_start, coupons.end_time AS coupon_end FROM `coupons_get` JOIN coupons ON coupons_get.coupon_id = coupons.id WHERE coupons_get.user_id=? AND coupons_get.valid=?",
+    [userId, 1]
+  );
+  console.log(couponsAll, couponsCanUse);
+  // 回覆前端需要的資料
+  res.json({ couponsAll, couponsCanUse });
 });
 
 // 取得使用者收藏資料 (商品,食譜)
@@ -254,4 +288,35 @@ router.get("/:userId/tracking", async (req, res) => {
 
   res.json({ productPagination, productData, recipePagination, recipeData });
 });
+
+// 新增使用者商品評論資料
+router.post("/:userId/productComment", async (req, res) => {
+  // --- (1) 有沒有收到資料
+  let userId = +req.params.userId;
+  let productId = +req.query.product;
+  let grade = req.body.grade;
+  let comment = req.body.comment;
+  console.log({
+    user: userId,
+    product: productId,
+    grade: grade,
+    comment: comment,
+  });
+  // --- (2)檢查使用者有沒有評論過此商品
+  let [productComment] = await pool.execute(
+    "SELECT * FROM `products_comment` WHERE user_id = ? AND product_id = ?",
+    [userId, productId]
+  );
+  console.log("已經評論過", productComment);
+  if (productComment.length > 0) {
+    return res.status(400).json({ message: "您已評論過此商品" });
+  }
+  // --- (3) 如果沒有評論過寫入資料庫
+  let result = await pool.execute(
+    "INSERT INTO `products_comment` (user_id, product_id, comment, grade, valid, time) VALUES (?,?,?,?,?,?)",
+    [userId, productId, comment, grade, 1, time]
+  );
+  res.json({ message: "商品評論成功" });
+});
+
 module.exports = router;

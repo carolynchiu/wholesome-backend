@@ -16,7 +16,7 @@ async function getProductList(req, res, next){
     
 
     //每一列表頁有幾筆資料
-    const perPage = 15;
+    const perPage = 18;
 
     //總筆數
     
@@ -100,15 +100,5 @@ async function getProductList(req, res, next){
     })
 }
 
-// 商品細節頁
-async function getProductDetail(req, res, next){
 
-    //前端送出請求時帶的參數:productId
-    const productId = req.params.productId;
-    console.log('productId in be',productId)
-    let data = await productsModel.getSingleProduct(productId);
-    console.log(data)
-    res.json(data)
-}
-
-module.exports= {getProductList, getProductDetail};
+module.exports= {getProductList};

@@ -76,6 +76,13 @@ app.use("/api/1.0/products", productRouter);
 let productDetailRouter = require("./routers/productDetail");
 app.use("/api/1.0/productDetail", productDetailRouter);
 
+// --- 商品評論
+let productCommentRouter = require("./routers/productComments");
+app.use("/api/1.0/productComments",productCommentRouter);
+
+let newProductsRouter= require("./routers/newProducts");
+app.use("/api/1.0/newProducts", newProductsRouter);
+
 // 食譜列表
 let recipesRouter = require("./routers/recipes");
 app.use("/api/1.0/recipes", recipesRouter);
