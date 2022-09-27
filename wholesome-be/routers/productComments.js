@@ -9,7 +9,7 @@ router.get('/:productId', async (req, res,next) => {
 
   const productId = req.params.productId
 
-  const page = req.query.page
+  const page = req.query.page || 1
 
   //評論總數
   let [total] = await pool.execute("SELECT COUNT(*) AS total FROM products_comment WHERE product_id = ? ",[productId])
