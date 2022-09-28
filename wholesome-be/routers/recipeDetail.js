@@ -82,11 +82,11 @@ router.get('/:recipeId', async (req, res, next) => {
       gradeAverage,
     },
     gradeInfo: [
-      { gradeCount: gradeCount1, gradePercent: gradePercent1 },
-      { gradeCount: gradeCount2, gradePercent: gradePercent2 },
-      { gradeCount: gradeCount3, gradePercent: gradePercent3 },
-      { gradeCount: gradeCount4, gradePercent: gradePercent4 },
       { gradeCount: gradeCount5, gradePercent: gradePercent5 },
+      { gradeCount: gradeCount4, gradePercent: gradePercent4 },
+      { gradeCount: gradeCount3, gradePercent: gradePercent3 },
+      { gradeCount: gradeCount2, gradePercent: gradePercent2 },
+      { gradeCount: gradeCount1, gradePercent: gradePercent1 },
     ],
   });
 });
