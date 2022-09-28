@@ -159,10 +159,10 @@ router.get("/:userId/orders", async (req, res) => {
 
   // --- (2) 列出使用者訂單資料
   let [data] = await pool.execute(
-    "SELECT order_list.*, order_status.name AS order_status FROM order_list LEFT OUTER JOIN order_status ON order_list.status_id = order_status.id WHERE order_list.user_id=? ORDER BY order_list.create_time DESC LIMIT ? OFFSET ?",
+    "SELECT order_list.*, order_status.name AS order_status ,coupons.discount_price AS coupon_price FROM order_list LEFT OUTER JOIN order_status ON order_list.status_id = order_status.id LEFT OUTER JOIN coupons ON order_list.coupon_id = coupons.id WHERE order_list.user_id= ? ORDER BY order_list.create_time DESC LIMIT ? OFFSET ?",
     [userId, perPage, offset]
   );
-  // console.log(data);
+  console.log("使用者訂單資料", data);
 
   res.json({
     pagination: {
@@ -319,6 +319,7 @@ router.post("/:userId/productComment", async (req, res) => {
   res.json({ message: "商品評論成功" });
 });
 
+// 取得使用者評論資料
 router.get("/:userId/productComment", async (req, res) => {
   let userId = +req.params.userId;
   let productId = +req.query.product;
