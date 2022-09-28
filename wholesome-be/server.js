@@ -78,9 +78,9 @@ app.use("/api/1.0/productDetail", productDetailRouter);
 
 // --- 商品評論
 let productCommentRouter = require("./routers/productComments");
-app.use("/api/1.0/productComments",productCommentRouter);
+app.use("/api/1.0/productComments", productCommentRouter);
 
-let newProductsRouter= require("./routers/newProducts");
+let newProductsRouter = require("./routers/newProducts");
 app.use("/api/1.0/newProducts", newProductsRouter);
 
 // 食譜列表
@@ -93,7 +93,7 @@ app.use("/api/1.0/recipeDetail", recipeDetailRouter);
 
 //食譜評論
 let recipeReview = require("./routers/recipeReview");
-app.use("/api/1.0/",recipeReview)
+app.use("/api/1.0/", recipeReview);
 
 // --- 商品收藏
 let productTrackingRouter = require("./routers/productTracking");
@@ -106,6 +106,10 @@ app.use("/api/1.0/recipeTracking", recipeTrackingRouter);
 // 購物車
 let cartRouter = require("./routers/cart");
 app.use("/api/1.0/cart", cartRouter);
+
+// 優惠券
+let couponsRouter = require("./routers/coupons");
+app.use("/api/1.0/coupons", couponsRouter);
 
 //404
 app.use((req, res, next) => {
