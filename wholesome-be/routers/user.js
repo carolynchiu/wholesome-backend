@@ -319,6 +319,7 @@ router.post("/:userId/productComment", async (req, res) => {
   res.json({ message: "商品評論成功" });
 });
 
+// 取得使用者評論資料
 router.get("/:userId/productComment", async (req, res) => {
   let userId = +req.params.userId;
   let productId = +req.query.product;
