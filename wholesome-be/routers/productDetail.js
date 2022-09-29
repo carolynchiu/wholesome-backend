@@ -9,6 +9,7 @@ router.get("/:productId", async(req,res,next) => {
 
   //商品細節資料
   let [productData] = await pool.execute("SELECT * FROM products JOIN products_category on products.category_id = products_category.category_id WHERE id = ?",[productId]);
+  
 
   let categoryId = parseInt(productData.map((v) => v.category_id));
 
@@ -29,17 +30,31 @@ router.get("/:productId", async(req,res,next) => {
  
   //相關商品
   let [relatedGoods] = await pool.execute('SELECT * FROM products WHERE category_id = ? AND id != ?',[categoryId, productId])
-
+  if(productData.length === 0) {
+    res.json({
+      productData,
+      stars: {
+        eachStar,
+        totalScore,
+        starCount,
+        average,
+      },
+      relatedGoods,
+      message:'none'
+    })
+  } else {
   res.json({
     productData,
-    stars: {
-      eachStar,
-      totalScore,
-      starCount,
-      average,
-    },
+      stars: {
+        eachStar,
+        totalScore,
+        starCount,
+        average,
+      },
     relatedGoods,
   });
+  }
+  
 });
 
 module.exports = router;
