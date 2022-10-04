@@ -23,7 +23,7 @@ SESSION_SECRET= testtest
 ```
 3. 資料庫建置
 
-    請安裝XAMPP並啟用Apache和MySQL，並在 MySQL 建立 wholesome_project 資料庫，並匯入位於後端根目錄的 wholesome_project.sql
+    請安裝XAMPP並啟用Apache和MySQL，並在 MySQL 先依.env檔的DB_USER和DB_PASSWWORD新增使用者帳號及密碼，然後建立 wholesome_project 資料庫，並匯入位於後端根目錄的 wholesome_project.sql
 4. 啟動後端專案　
 ```
 npm run dev
